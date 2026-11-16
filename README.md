@@ -14,8 +14,9 @@ parameter open model for that task on one consumer graphics card.
 | Reported skills that are asked for | 77% | 81% | 66% | **87%** |
 | Required filed as required (F1) | none | 0.75 | 0.59 | **0.85** |
 
-Full tables, method and limits: [RESULTS.md](RESULTS.md). The tuned adapter:
-[MODEL_CARD.md](MODEL_CARD.md).
+Full tables, method and limits: [RESULTS.md](RESULTS.md). The tuned adapter is described in
+[MODEL_CARD.md](MODEL_CARD.md); its files are attached to the
+[adapter-v1 release](https://github.com/cristiangirlea/job-skill-extraction/releases/tag/adapter-v1).
 
 ## What is here
 

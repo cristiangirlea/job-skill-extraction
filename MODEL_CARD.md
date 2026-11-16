@@ -19,8 +19,11 @@ so a program can check that the answer is grounded in the text.
 
 ## Use
 
-Load the base model with `transformers`, attach the adapter with `peft`, and send the prompt
-above; `tools/run_hf.py` does exactly that. Serve it with a JSON schema where the runtime
+The files are attached to the
+[adapter-v1 release](https://github.com/cristiangirlea/job-skill-extraction/releases/tag/adapter-v1):
+put `adapter_model.safetensors` and `adapter_config.json` in one folder. Load the base model with
+`transformers`, attach the adapter from that folder with `peft`, and send the prompt above;
+`tools/run_hf.py` does exactly that with `--adapter <folder>`. Serve it with a JSON schema where the runtime
 supports one: without it about 1 answer in 100 is not valid JSON (an unescaped quotation mark
 copied from the posting).
 
