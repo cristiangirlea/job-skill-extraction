@@ -1,0 +1,11 @@
+data/
+runs/
+models/
+*.jsonl
+*.safetensors
+*.gguf
+__pycache__/
+*.pyc
+CLAUDE.local.md
+.claude/settings.local.json
+.private-terms
