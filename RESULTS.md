@@ -62,6 +62,41 @@ all through `tools/run_hf.py`. Pass 1 is an earlier training run (v1) of one pas
 fewer postings; passes 2 and 3 are from the final run (v2). The first pass taught the model what
 to leave out; the later passes taught it to find more of what belongs.
 
+## The adapter in llama.cpp
+
+The adapter of pass 3 converted to GGUF (float32) and applied at run time to a 4-bit GGUF of the
+base model, against the same adapter on the full-precision base in PyTorch. Scored on the
+development set, not on the test set.
+
+| 100 development postings | PyTorch, full precision | llama.cpp, 4-bit base + adapter |
+|---|---|---|
+| Required skills found (recall) | 0.83 | 0.86 |
+| Reported skills that the posting asks for (precision) | 0.90 | 0.89 |
+| The two combined (F1) | 0.86 | 0.88 |
+| Required skills filed as required (F1) | 0.83 | 0.84 |
+| Hard constraints, precision / recall | 0.92 / 0.84 | 0.90 / 0.85 |
+| Postings with an eligibility condition caught (of 9) | 8 | 7 |
+| Seniority level right | 0.93 | 0.96 |
+| Quotes copied exactly | 0.997 | 0.997 |
+| Unusable answers (of 100) | 2 | 0 |
+| Seconds per posting (median) | 17 | 10 |
+
+| Column | Run | How it was produced |
+|---|---|---|
+| PyTorch, full precision | `dev-v2-epoch3.jsonl` | The "Pass 3" run of the table above: `tools/run_hf.py --adapter`, bf16, no schema. |
+| llama.cpp, 4-bit base + adapter | `dev-gguf-q4km-lora.jsonl` | `convert_lora_to_gguf.py` of llama.cpp build b11321 with `--outtype f32`; `llama-server` of the same build with a Q4_K_M GGUF of Qwen3.5-4B and `--lora`; `tools/run_model.py`, four requests at a time, thinking off, with the answer forced into the JSON schema. |
+
+- Both columns were scored without an alias map (`-` as the last argument of `score.py score`).
+  For the PyTorch run that gives the same rounded figures as the table above.
+- The two runs differ in three things at once: the base model's precision, the runtime, and the
+  schema. Both unusable answers of the PyTorch run are invalid JSON by the run file's error
+  field, which the schema rules out, and an unusable answer counts as wrong on every row. The
+  remaining differences are too small to rank the two setups on 100 postings.
+- "Seconds per posting" is the median of the run files' own timing, not a score, on the same
+  20 GB consumer graphics card. The PyTorch run answered one posting at a time; the llama.cpp
+  run had four requests in flight, each timed on its own, so the 100 postings took less time
+  in total than the median suggests.
+
 ## What the numbers do not show
 
 - **The labels are a model's, not people's.** A large language model labelled every posting

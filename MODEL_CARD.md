@@ -27,6 +27,18 @@ put `adapter_model.safetensors` and `adapter_config.json` in one folder. Load th
 supports one: without it about 1 answer in 100 is not valid JSON (an unescaped quotation mark
 copied from the posting).
 
+For llama.cpp the release also holds the adapter as GGUF,
+`job-skill-extraction-qwen3.5-4b-lora-f32.gguf`. Start the server with a GGUF of the base model
+and the adapter on top, then send requests as `tools/run_model.py` does (the JSON schema, and
+thinking turned off):
+
+```bash
+llama-server -m <Qwen3.5-4B GGUF> --lora job-skill-extraction-qwen3.5-4b-lora-f32.gguf --host 127.0.0.1 --port 8081
+```
+
+On the development postings this setup, with a 4-bit base, scored like the full-precision
+model in PyTorch (`RESULTS.md`, "The adapter in llama.cpp").
+
 Intended for ranking and filtering job postings for a job seeker. It is not a hiring tool and
 must not be used to assess people.
 
